@@ -22,7 +22,8 @@ static inline void lu_str32_clear(lu_str32 *self) {
 static inline int lu_str32_isempty(lu_str32 *self) { return !self->str[0]; }
 
 static inline void lu_str32_cpy(lu_str32 *dst, lu_str32 *src) {
-    memcpy(dst, src, LU_STRLEN);
+    *dst = *src;
+    // memcpy(dst, src, LU_STRLEN);
 }
 
 static inline void lu_str32_cpymem(lu_str32 *dst, const char *src) {
@@ -38,11 +39,8 @@ static inline int lu_str32_cmpmem(lu_str32 *self, const char *other) {
     return strncmp(self->str, other, LU_STRLEN);
 }
 
-static inline uint64_t lu_str32_hash(lu_str32 *self, uint64_t seed) {
-    uint64_t acc = 32 * LU_64PRIME1;
-    acc += lu_hash_mix16((const uint8_t *)self->str, LU_SECRET, seed);
-    acc += lu_hash_mix16((const uint8_t *)&self->str[16], &LU_SECRET[16], seed);
-    return lu_hash_avalanche_fast(acc);
+static inline uint64_t lu_str32_hash(lu_str32 *self) {
+    return lu_hash_str32((const uint8_t *)self->str);
 }
 
 #endif // __LU_FIXED_STRING_H__
