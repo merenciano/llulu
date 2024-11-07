@@ -1,5 +1,5 @@
-#ifndef __LU_DEFS_H__
-#define __LU_DEFS_H__
+#ifndef __LUC_DEFS_H__
+#define __LUC_DEFS_H__
 
 #ifdef LU_RESTRICT
 #undef LU_RESTRICT
@@ -15,4 +15,4 @@
 
 #define LU_ARR_COUNT(ARR) (sizeof(ARR) / sizeof(*(ARR)))
 
-#endif /* __LU_DEFS_H__ */
+#endif /* __LUC_DEFS_H__ */

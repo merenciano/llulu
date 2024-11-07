@@ -1,3 +1,6 @@
+#ifndef __LUC_HASH_H__
+#define __LUC_HASH_H__
+
 #include <stdint.h>
 
 /* xxHash implementation */
@@ -34,3 +37,5 @@ static inline uint64_t lu_hash_str32(const uint8_t *data) {
     acc += lu_hash_mix16((data + 16), SECRET + 16, 0);
     return lu_hash_avalanche(acc);
 }
+
+#endif /* __LUC_HASH_H__ */

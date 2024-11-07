@@ -1,5 +1,5 @@
-#include "lu_fixedstr.h"
-#include "lu_time.h"
+#include "luc_str32.h"
+#include "luc_time.h"
 
 #include <stdio.h>
 

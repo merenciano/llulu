@@ -1,7 +1,8 @@
-#ifndef __LU_FIXED_STRING_H__
-#define __LU_FIXED_STRING_H__
+#ifndef __LUC_STRING_32_H__
+#define __LUC_STRING_32_H__
 
-#include "lu_hash.h"
+#include "luc_hash.h"
+#include "luc_math.h"
 
 #include <stdint.h>
 #include <string.h>
@@ -21,26 +22,32 @@ static inline void lu_str32_clear(lu_str32 *self) {
 
 static inline int lu_str32_isempty(lu_str32 *self) { return !self->str[0]; }
 
-static inline void lu_str32_cpy(lu_str32 *dst, lu_str32 *src) {
-    *dst = *src;
-    // memcpy(dst, src, LU_STRLEN);
+static inline void lu_str32_cpy(lu_str32 *dst, lu_str32 *src) { *dst = *src; }
+
+static inline void lu_str32_cpystr(lu_str32 *dst, const char *src) {
+    lu_str32_clear(dst);
+    strncpy(dst->str, src, LU_STRLEN - 1);
 }
 
-static inline void lu_str32_cpymem(lu_str32 *dst, const char *src) {
+static inline void lu_str32_cpymem(lu_str32 *dst, const void *src, size_t bytes) {
     lu_str32_clear(dst);
-    strncpy(dst->str, src, LU_STRLEN);
+    memcpy(dst->str, src, lu_minu(bytes, LU_STRLEN - 1));
 }
 
 static inline int lu_str32_cmp(lu_str32 *self, lu_str32 *other) {
     return memcmp(self->str, other->str, LU_STRLEN);
 }
 
-static inline int lu_str32_cmpmem(lu_str32 *self, const char *other) {
+static inline int lu_str32_cmpstr(lu_str32 *self, const char *other) {
     return strncmp(self->str, other, LU_STRLEN);
+}
+
+static inline int lu_str32_cmpmem(lu_str32 *self, const void *other, size_t bytes) {
+    return memcmp(self->str, other, lu_minu(bytes, LU_STRLEN));
 }
 
 static inline uint64_t lu_str32_hash(lu_str32 *self) {
     return lu_hash_str32((const uint8_t *)self->str);
 }
 
-#endif // __LU_FIXED_STRING_H__
+#endif // __LUC_STRING_32_H__

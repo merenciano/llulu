@@ -1,5 +1,5 @@
-#ifndef __LU_TIME_H__
-#define __LU_TIME_H__
+#ifndef __LUC_TIME_H__
+#define __LUC_TIME_H__
 
 #include <stdint.h>
 #include <time.h>
@@ -72,4 +72,4 @@ static inline int64_t lu_time_elapsed(lu_timestamp time_from)
 static inline float lu_time_sec(lu_timestamp ns) { return ns / 1000000000.0f; }
 static inline int64_t lu_time_ms(lu_timestamp ns) { return ns / 1000000; }
 
-#endif /* __LU_TIME_H__ */
+#endif /* __LUC_TIME_H__ */
