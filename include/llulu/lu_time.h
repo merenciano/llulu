@@ -1,11 +1,11 @@
-#ifndef __LUC_TIME_H__
-#define __LUC_TIME_H__
+#ifndef __LLULU_TIME_H__
+#define __LLULU_TIME_H__
 
 #include <stdint.h>
 #include <time.h>
 
 /** Compile-time configuration option to specify the default clock. */
-#define LU_TIME_DEFAULT_CLOCK LU_TIME_CLOCK_THREAD
+#define LU_TIME_DEFAULT_CLOCK LU_TIME_CLOCK_MONOTONIC
 
 /**
  * @brief Clock definitions.
@@ -39,8 +39,7 @@ typedef int64_t lu_timestamp;
  * lu_time_clock_e.
  * @return Current timestamp in nanoseconds.
  */
-static inline lu_timestamp lu_time_get_using_clock(int clock_id)
-{
+static inline lu_timestamp lu_time_get_using_clock(int clock_id) {
     struct timespec time;
     clock_gettime(clock_id, &time);
     return time.tv_nsec + time.tv_sec * 1000000000;
@@ -52,8 +51,7 @@ static inline lu_timestamp lu_time_get_using_clock(int clock_id)
  * clock, @see LU_TIME_DEFAULT_CLOCK.
  * @return Current timestamp in nanoseconds.
  */
-static inline lu_timestamp lu_time_get(void)
-{
+static inline lu_timestamp lu_time_get(void) {
     return lu_time_get_using_clock(LU_TIME_DEFAULT_CLOCK);
 }
 
@@ -63,8 +61,7 @@ static inline lu_timestamp lu_time_get(void)
  * @param time_from Beginning of the time span.
  * @return Nanoseconds elapsed since the timestamp.
  */
-static inline int64_t lu_time_elapsed(lu_timestamp time_from)
-{
+static inline int64_t lu_time_elapsed(lu_timestamp time_from) {
     return lu_time_get() - time_from;
 }
 
@@ -72,4 +69,4 @@ static inline int64_t lu_time_elapsed(lu_timestamp time_from)
 static inline float lu_time_sec(lu_timestamp ns) { return ns / 1000000000.0f; }
 static inline int64_t lu_time_ms(lu_timestamp ns) { return ns / 1000000; }
 
-#endif /* __LUC_TIME_H__ */
+#endif /* __LLULU_TIME_H__ */

@@ -1,5 +1,5 @@
-#ifndef __LUC_HASH_H__
-#define __LUC_HASH_H__
+#ifndef __LLULU_HASH_H__
+#define __LLULU_HASH_H__
 
 #include <stdint.h>
 
@@ -25,7 +25,7 @@ static inline uint64_t lu_hash_mix16(const uint8_t *data, const uint8_t *sec,
                                  hi ^ (*(uint64_t *)(sec + 8) - seed));
 }
 
-static inline uint64_t lu_hash_str32(const uint8_t *data) {
+static inline uint64_t lu_hash_32bytes(const uint8_t data[32]) {
     static const uint64_t PRIME = 0x9E3779B185EBCA87ULL;
     static const uint8_t SECRET[] = {
         0xb8, 0xfe, 0x6c, 0x39, 0x23, 0xa4, 0x4b, 0xbe, 0x7c, 0x01, 0x81,
@@ -38,4 +38,4 @@ static inline uint64_t lu_hash_str32(const uint8_t *data) {
     return lu_hash_avalanche(acc);
 }
 
-#endif /* __LUC_HASH_H__ */
+#endif /* __LLULU_HASH_H__ */

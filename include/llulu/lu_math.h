@@ -1,5 +1,5 @@
-#ifndef __LUC_MATH_H__
-#define __LUC_MATH_H__
+#ifndef __LLULU_MATH_H__
+#define __LLULU_MATH_H__
 
 #include <stddef.h>
 
@@ -14,4 +14,4 @@ static inline int lu_maxi(int a, int b) { return a >= b ? a : b; }
 static inline size_t lu_minu(size_t a, size_t b) { return a < b ? a : b; }
 static inline size_t lu_maxu(size_t a, size_t b) { return a >= b ? a : b; }
 
-#endif /* __LUC_MATH_H__ */
+#endif /* __LLULU_MATH_H__ */
