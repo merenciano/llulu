@@ -2,7 +2,6 @@
 #define __LLULU_TIME_H__
 
 #include <stdint.h>
-#include <time.h>
 
 /** Compile-time configuration option to specify the default clock. */
 #define LU_TIME_DEFAULT_CLOCK LU_TIME_CLOCK_MONOTONIC
@@ -39,11 +38,7 @@ typedef int64_t lu_timestamp;
  * lu_time_clock_e.
  * @return Current timestamp in nanoseconds.
  */
-static inline lu_timestamp lu_time_get_using_clock(int clock_id) {
-    struct timespec time;
-    clock_gettime(clock_id, &time);
-    return time.tv_nsec + time.tv_sec * 1000000000;
-}
+lu_timestamp lu_time_get_using_clock(int clock_id);
 
 /**
  * @brief Gets the current timestamp in nanoseconds.
