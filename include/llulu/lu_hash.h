@@ -3,7 +3,7 @@
 
 #include <stdint.h>
 
-/* xxHash implementation */
+/* xxHash implementation - https://github.com/Cyan4973/xxHash */
 
 static inline uint64_t lu_hash_avalanche(uint64_t hash) {
     static const uint64_t PRIME = 0x165667919E3779F9ULL;

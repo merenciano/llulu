@@ -24,5 +24,6 @@
 #endif
 
 #define LU_ARR_SIZE(ARR) (sizeof(ARR) / sizeof(ARR[0]))
+#define LU_IS_POW2(X) ((X > 0) && !((X) & ((X) - 1)))
 
 #endif /* __LLULU_DEFS_H__ */
