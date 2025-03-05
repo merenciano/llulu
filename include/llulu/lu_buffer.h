@@ -22,9 +22,15 @@ typedef struct lu_array {
     size_t elem_sz;
 } lu_array;
 
-void *lu_array_push(lu_array *self, int count, const void *data)
+typedef struct lu_ring {
+    lu_buffer buf;
+    size_t write;
+    size_t read;
+} lu_ring;
+
+static inline void *lu_array_push(lu_array *self)
 {
-    if ((self->count + count) * self->elem_sz > self->buf.size) {
+    if ((self->count + 1) * self->elem_sz > self->buf.size) {
         void *new_data = malloc(self->buf.size * 2);
         if (new_data) {
             memcpy(new_data, self->buf.data, self->buf.size);
@@ -37,12 +43,12 @@ void *lu_array_push(lu_array *self, int count, const void *data)
         }
     }
 
-    void *new_value = &self->buf.data[self->count * self->elem_sz];
-    memcpy(new_value, data, self->elem_sz * count);
-    self->count += count;
-    return new_value;
+    return &self->buf.data[self->count++ * self->elem_sz];
 }
 
-
+static inline void *lu_array_pop(lu_array *self)
+{
+    return &self->buf.data[--self->count * self->elem_sz];
+}
 
 #endif /* __LLULU_BUFFER_H__ */
