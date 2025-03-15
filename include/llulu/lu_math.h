@@ -3,6 +3,8 @@
 
 #include <stddef.h>
 
+#define LU_PI 3.14159265358979323846f
+
 static inline float lu_minf(float a, float b) { return a < b ? a : b; }
 static inline float lu_maxf(float a, float b) { return a >= b ? a : b; }
 static inline float lu_clampf(float v, float min, float max) { return (v < min) ? min : (v > max) ? max : v; }
