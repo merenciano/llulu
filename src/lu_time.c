@@ -106,14 +106,23 @@ int clock_gettime(int clock_id, struct timespec *tp)
 
 #elif __STDC_VERSION__ >= 201112L
 
-int clock_gettime(int clock_id, struct timespec *tp)
+static inline int clock_gettime(int clock_id, struct timespec *tp)
 {
     // Always CLOCK_RUNTIME but better than nothing.
     return timespec_get(tp, TIME_UTC);
-};
+}
 
 #else
-#warning "Timer not implemented for this platform or version."
+
+static inline int clock_gettime(int clock_id, struct timespec *tp)
+{
+    struct timeval tv;
+    gettimeofday(&tv, NULL);
+    tp->tv_sec = tv.tv_sec;
+    tp->tv_nsec = tv->tv_usec * 1000;
+    return 0;
+}
+
 #endif
 #endif
 
