@@ -67,7 +67,8 @@
 #define LU_VEC3(X, Y, Z) (lu_vec3){(X), (Y), (Z)}
 #define LU_VEC2(X, Y) (lu_vec2){(X), (Y)}
 #define LU_GET_VEC_EX(X, Y, Z, W, NAME, ...) NAME
+#define LU_EXPAND(X) X
 #define LU_VEC(...)                                                           \
-    LU_GET_VEC_EX(__VA_ARGS__, LU_VEC4, LU_VEC3, LU_VEC2)(__VA_ARGS__)
+    LU_EXPAND(LU_GET_VEC_EX(__VA_ARGS__, LU_VEC4, LU_VEC3, LU_VEC2)(__VA_ARGS__))
 
 #endif /* __LLULU_DEFS_H__ */

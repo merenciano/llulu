@@ -26,6 +26,10 @@ static inline size_t lu_maxu(size_t a, size_t b) { return a >= b ? a : b; }
 static inline float lu_radians(float degrees) { return degrees * LU_PI / 180.0f; }
 static inline float lu_degrees(float radians) { return radians * 180.0f / LU_PI; }
 
+typedef struct lu_vec2 {
+	float x, y;
+} lu_vec2;
+
 typedef struct lu_vec3 {
     float x, y, z;
 } lu_vec3;
