@@ -554,12 +554,12 @@ lu_mat4_zero(float *result)
 static inline lu_mat4
 lu_mat4_get(void)
 {
-	return (lu_mat4) {
+	return (lu_mat4) { .m = {
 		1.0f, 0.0f, 0.0f, 0.0f,
 		0.0f, 1.0f, 0.0f, 0.0f,
 		0.0f, 0.0f, 1.0f, 0.0f,
 		0.0f, 0.0f, 0.0f, 1.0f 
-	};
+	}};
 }
 
 static inline float *
