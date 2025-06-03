@@ -8,6 +8,34 @@
 #define LU_PI 3.14159265358979323846f
 #define LU_EPSILON 1.19209290e-7f
 
+#if defined(__STDC_VERSION__) && !defined(__TINYC__)
+static inline float
+lu_sin(float a) { return sinf(a);}
+static inline float
+lu_cos(float a) { return cosf(a);}
+static inline float
+lu_acos(float a) { return acosf(a);}
+static inline float
+lu_sqrt(float x) { return sqrtf(x);}
+static inline float
+lu_atan2(float y, float x) { return atan2f(y, x);}
+static inline float
+lu_fmod(float x, float y) { return fmodf(x, y);}
+#else
+static inline float
+lu_sin(float a) { return sin(a);}
+static inline float
+lu_cos(float a) { return cos(a);}
+static inline float
+lu_acos(float a) { return acos(a);}
+static inline float
+lu_sqrt(float x) { return sqrt(x);}
+static inline float
+lu_atan2(float y, float x) { return atan2(y, x);}
+static inline float
+lu_fmod(float x, float y) { return fmod(x, y);}
+#endif
+
 static inline float
 lu_minf(float a, float b) { return a < b ? a : b; }
 static inline float
@@ -301,7 +329,7 @@ lu_vec3_cross(float *result, float *v0, float *v1)
 static inline float *
 lu_vec3_normalize(float *result, float *v0)
 {
-	float l = sqrtf(v0[0] * v0[0] + v0[1] * v0[1] + v0[2] * v0[2]);
+	float l = lu_sqrt(v0[0] * v0[0] + v0[1] * v0[1] + v0[2] * v0[2]);
 	result[0] = v0[0] / l;
 	result[1] = v0[1] / l;
 	result[2] = v0[2] / l;
@@ -356,8 +384,8 @@ lu_vec3_rotate(float *result, float *v0, float *ra, float f)
 	float rx;
 	float ry;
 	float rz;
-	cs = cosf(f);
-	sn = sinf(f);
+	cs = lu_cos(f);
+	sn = lu_sin(f);
 	x = v0[0];
 	y = v0[1];
 	z = v0[2];
@@ -411,7 +439,7 @@ lu_vec3_bezier4(float *result, float *v0, float *v1, float *v2, float *v3, float
 static inline float
 lu_vec3_length(float *v0)
 {
-	return sqrtf(v0[0] * v0[0] + v0[1] * v0[1] + v0[2] * v0[2]);
+	return lu_sqrt(v0[0] * v0[0] + v0[1] * v0[1] + v0[2] * v0[2]);
 }
 
 static inline float
@@ -423,7 +451,7 @@ lu_vec3_length_squared(float *v0)
 static inline float
 lu_vec3_distance(float *v0, float *v1)
 {
-	return sqrtf((v0[0] - v1[0]) * (v0[0] - v1[0]) + (v0[1] - v1[1]) * (v0[1] - v1[1]) + (v0[2] - v1[2]) * (v0[2] - v1[2]));
+	return lu_sqrt((v0[0] - v1[0]) * (v0[0] - v1[0]) + (v0[1] - v1[1]) * (v0[1] - v1[1]) + (v0[2] - v1[2]) * (v0[2] - v1[2]));
 }
 
 static inline float
@@ -860,8 +888,8 @@ lu_mat4_cofactor(float *result, float *m0)
 static inline float *
 lu_mat4_rotation_x(float *result, float f)
 {
-	float c = cosf(f);
-	float s = sinf(f);
+	float c = lu_cos(f);
+	float s = lu_sin(f);
 	result[5] = c;
 	result[6] = s;
 	result[9] = -s;
@@ -872,8 +900,8 @@ lu_mat4_rotation_x(float *result, float f)
 static inline float *
 lu_mat4_rotation_y(float *result, float f)
 {
-	float c = cosf(f);
-	float s = sinf(f);
+	float c = lu_cos(f);
+	float s = lu_sin(f);
 	result[0] = c;
 	result[2] = -s;
 	result[8] = s;
@@ -884,8 +912,8 @@ lu_mat4_rotation_y(float *result, float f)
 static inline float *
 lu_mat4_rotation_z(float *result, float f)
 {
-	float c = cosf(f);
-	float s = sinf(f);
+	float c = lu_cos(f);
+	float s = lu_sin(f);
 	result[0] = c;
 	result[1] = s;
 	result[4] = -s;
@@ -896,8 +924,8 @@ lu_mat4_rotation_z(float *result, float f)
 static inline float *
 lu_mat4_rotation_axis(float *result, float *v0, float f)
 {
-	float c = cosf(f);
-	float s = sinf(f);
+	float c = lu_cos(f);
+	float s = lu_sin(f);
 	float one_c = 1.0f - c;
 	float x = v0[0];
 	float y = v0[1];
@@ -1346,7 +1374,7 @@ lu_mat4_perspective(float *result, float fov_y, float aspect, float n, float f)
 static inline float *
 lu_mat4_perspective_fov(float *result, float fov, float w, float h, float n, float f)
 {
-	float h2 = cosf(fov * 0.5f) / sinf(fov * 0.5f);
+	float h2 = lu_cos(fov * 0.5f) / lu_sin(fov * 0.5f);
 	float w2 = h2 * h / w;
 	result[0] = w2;
 	result[1] = 0.0f;
