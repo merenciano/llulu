@@ -106,7 +106,7 @@ int clock_gettime(int clock_id, struct timespec *tp)
 
 #elif __STDC_VERSION__ >= 201112L
 
-static inline int clock_gettime(int clock_id, struct timespec *tp)
+static int clock_gettime(int clock_id, struct timespec *tp)
 {
     // Always CLOCK_RUNTIME but better than nothing.
     return timespec_get(tp, TIME_UTC);
@@ -114,7 +114,7 @@ static inline int clock_gettime(int clock_id, struct timespec *tp)
 
 #else
 
-static inline int clock_gettime(int clock_id, struct timespec *tp)
+static int clock_gettime(int clock_id, struct timespec *tp)
 {
     struct timeval tv;
     gettimeofday(&tv, NULL);
