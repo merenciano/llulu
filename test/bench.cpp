@@ -10,7 +10,7 @@
 
 static const size_t ITERATIONS = 2048UL << 22UL;
 
-int main(void)
+static void lu_sstr_bench()
 {
     srand(1);
     int idx = rand() % LU_ARR_SIZE(bench_data);
@@ -43,7 +43,7 @@ int main(void)
     }
 
     uint64_t lapse = lu_time_elapsed(start);
-    printf("Elapsed test 1: %lu ns. (%s, %d)\n", lapse, str.str, cnd);
+    printf("Elapsed test 1: %llu ns. (%s, %d)\n", lapse, str.str, cnd);
 
     start = lu_time_get();
     for (size_t i = 0; i < ITERATIONS; ++i) {
@@ -71,7 +71,7 @@ int main(void)
     }
 
     lapse = lu_time_elapsed(start);
-    printf("Elapsed test 1: %lu ns. (%s, %d)\n", lapse, str.str, cnd);
+    printf("Elapsed test 2: %llu ns. (%s, %d)\n", lapse, str.str, cnd);
 
     start = lu_time_get();
     for (size_t i = 0; i < ITERATIONS; ++i) {
@@ -99,7 +99,106 @@ int main(void)
     }
 
     lapse = lu_time_elapsed(start);
-    printf("Elapsed test 1: %lu ns. (%s, %d)\n", lapse, str.str, cnd);
+    printf("Elapsed test 3: %llu ns. (%s, %d)\n", lapse, str.str, cnd);
+}
+
+static void cpp_string_bench()
+{
+    srand(1);
+    int idx = rand() % LU_ARR_SIZE(bench_data);
+    std::string str;
+    bool cnd;
+    uint64_t start = lu_time_get();
+
+    for (size_t i = 0; i < ITERATIONS; ++i) {
+        std::string a = bench_data[idx].str;
+        if (a != str) {
+            a = str;
+        }
+
+        idx = (idx + 1) % LU_ARR_SIZE(bench_data);
+        std::string b = bench_data[idx].str;
+
+
+        if (a != b) {
+            a = b;
+        } else  {
+            a.clear();
+        }
+
+        cnd = (a == b);
+        if (cnd || a.empty()) {
+            str = a;
+        } else {
+            str = b;
+        }
+    }
+
+    uint64_t lapse = lu_time_elapsed(start);
+    printf("Elapsed test 4: %llu ns. (%s, %d)\n", lapse, str.c_str(), cnd);
+
+    start = lu_time_get();
+    for (size_t i = 0; i < ITERATIONS; ++i) {
+        std::string a = bench_data[idx].str;
+        if (a != str) {
+            a = str;
+        }
+
+        idx = (idx + 1) % LU_ARR_SIZE(bench_data);
+        std::string b = bench_data[idx].str;
+
+
+        if (a != b) {
+            a = b;
+        } else  {
+            a.clear();
+        }
+
+        cnd = (a ==  b);
+        if (cnd || a.empty()) {
+            str = a;
+        } else {
+            str = b;
+        }
+    }
+
+    lapse = lu_time_elapsed(start);
+    printf("Elapsed test 5: %llu ns. (%s, %d)\n", lapse, str.c_str(), cnd);
+
+    start = lu_time_get();
+    for (size_t i = 0; i < ITERATIONS; ++i) {
+        std::string a = bench_data[idx].str;
+        if (a != str) {
+            a = str;
+        }
+
+        idx = (idx + 1) % LU_ARR_SIZE(bench_data);
+        std::string b = bench_data[idx].str;
+
+
+        if (a != b) {
+            a = b;
+        } else  {
+            a.clear();
+        }
+
+        cnd = (a == b);
+        if (cnd || a.empty()) {
+            str = a;
+        } else {
+            str = b;
+        }
+    }
+
+    lapse = lu_time_elapsed(start);
+    printf("Elapsed test 6: %llu ns. (%s, %d)\n", lapse, str.c_str(), cnd);
+}
+
+int main(void)
+{
+    cpp_string_bench();
+
+    lu_sstr_bench();
 
     return 0;
 }

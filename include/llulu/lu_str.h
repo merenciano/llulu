@@ -156,7 +156,7 @@ static inline uint64_t
 lu_sstr_hash(lu_sstr *self)
 {
     assert(self);
-    return lu_hash_32bytes((void*)self);
+    return lu_hash_32bytes((const uint8_t*)self);
 }
 
 #ifdef __cplusplus
