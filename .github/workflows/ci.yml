@@ -1,0 +1,60 @@
+name: CI
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Dependencies
+        run: |
+          sudo apt update
+          sudo apt install -y valgrind linux-tools-generic libpapi-dev
+
+      - name: Configure CMake
+        run: cmake -B build -DCMAKE_BUILD_TYPE=Debug
+
+      - name: Build
+        run: cmake --build build --parallel
+
+      - name: Run unit tests
+        run: ctest --test-dir build --output-on-failure
+
+      - name: Valgrind Memcheck
+        run: ctest --test-dir build -T memcheck
+
+      - name: Valgrind Cachegrind
+        run: valgrind --tool=cachegrind --cachegrind-out-file=cachegrind.out build/test/mat4_test
+      - uses: actions/upload-artifact@v3
+        with:
+          name: cachegrind-profile
+          path: cachegrind.out
+
+      - name: Valgrind Callgrind
+        run: valgrind --tool=callgrind --callgrind-out-file=callgrind.out build/test/mat4_test
+      - uses: actions/upload-artifact@v3
+        with:
+          name: callgrind-profile
+          path: callgrind.out
+
+      - name: Valgrind Massif
+        run: valgrind --tool=massif --massif-out-file=massif.out build/test/mat4_test
+      - uses: actions/upload-artifact@v3
+        with:
+          name: massif-profile
+          path: massif.out
+
+      - name: Valgrind Helgrind
+        run: valgrind --tool=helgrind --log-file=helgrind.out build/bin/my_test_binary
+      - uses: actions/upload-artifact@v3
+        with:
+          name: helgrind-profile
+          path: helgrind.out
+
