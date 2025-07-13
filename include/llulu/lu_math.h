@@ -508,6 +508,20 @@ lu_vec3_orthonormalization(float result[3][3], float basis[3][3])
 	return (float**)result;
 }
 
+static inline float *
+lu_vec4_multiply_mat4(float *result, float *v0, float *m0)
+{
+	float x = v0[0];
+	float y = v0[1];
+	float z = v0[2];
+	float w = v0[3];
+	result[0] = m0[0] * x + m0[4] * y + m0[8] * z + m0[12] * w;
+	result[1] = m0[1] * x + m0[5] * y + m0[9] * z + m0[13] * w;
+	result[2] = m0[2] * x + m0[6] * y + m0[10] * z + m0[14] * w;
+	result[3] = m0[3] * x + m0[7] * y + m0[11] * z + m0[15] * w;
+	return result;
+}
+
 static inline float
 lu_mat3_determinant(float *m0)
 {
