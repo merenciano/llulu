@@ -1,5 +1,5 @@
-#ifndef __LLULU_STRING_H__
-#define __LLULU_STRING_H__
+#ifndef LLULU_STRING_H
+#define LLULU_STRING_H
 
 #include "lu_hash.h"
 #include "lu_math.h"
@@ -91,12 +91,12 @@ lu_sstr_memcpy_0(lu_sstr * restrict dst, const void * restrict src, size_t bytes
 
     lu_sstr_clear(dst);
     bytes = lu_minu(bytes, LU_SSTRLEN - 1);
-    register unsigned count = bytes >> 3;
+    unsigned int count = bytes >> 3;
     for (unsigned i = 0; i < count; ++i) {
         ((size_t*)dst)[i] = ((size_t*)src)[i];
     }
 
-    register unsigned rem = bytes & 7;
+    unsigned int rem = bytes & 7;
     for (unsigned i = count << 3; i < rem; ++i) {
         dst->str[i] = ((char*)src)[i];
     }
@@ -163,4 +163,5 @@ lu_sstr_hash(lu_sstr *self)
 }
 #endif
 
-#endif // __LLULU_STRING_H__
+#endif /* LLULU_STRING_H
+

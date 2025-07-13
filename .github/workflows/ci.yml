@@ -52,7 +52,7 @@ jobs:
           path: massif.out
 
       - name: Valgrind Helgrind
-        run: valgrind --tool=helgrind --log-file=helgrind.out build/bin/my_test_binary
+        run: valgrind --tool=helgrind --log-file=helgrind.out build/test/mat4_test
       - uses: actions/upload-artifact@v4
         with:
           name: helgrind-profile
