@@ -2,6 +2,7 @@
 #define __LLULU_TIME_H__
 
 #include <stdint.h>
+#include <time.h>
 
 /** Compile-time configuration option to specify the default clock. */
 #define LU_TIME_DEFAULT_CLOCK LU_TIME_CLOCK_MONOTONIC
@@ -63,5 +64,27 @@ static inline int64_t lu_time_elapsed(lu_timestamp time_from) {
 /** Time unit conversion helpers. */
 static inline float lu_time_sec(lu_timestamp ns) { return ns / 1000000000.0f; }
 static inline int64_t lu_time_ms(lu_timestamp ns) { return ns / 1000000; }
+
+/**
+ * @brief Returns the current time as string, formatted as Hour:Min:Sec.
+ * @note The returned string is just the param buffer, for convenience.
+ * @param buf Buffer with at least 16 bytes of space.
+ * @return Current hours, minutes and seconds in formatted text.
+ */
+static inline const char *lu_time_hms_str(char buf[16])
+{
+    time_t t = time(NULL);
+    struct tm *time = localtime(&t);
+    buf[strftime(buf, 16, "%H:%M:%S", time)] = '\0';
+    return buf;
+}
+
+static inline const char *lu_time_date_str(char buf[16])
+{
+    time_t t = time(NULL);
+    struct tm *time = localtime(&t);
+    buf[strftime(buf, 16, "%Y-%m-%d", time)] = '\0';
+    return buf;
+}
 
 #endif /* __LLULU_TIME_H__ */

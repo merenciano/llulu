@@ -1,5 +1,12 @@
-#ifndef __LLULU_DEFS_H__
-#define __LLULU_DEFS_H__
+#ifndef LLULU_LU_DEFS_H
+#define LLULU_LU_DEFS_H
+
+/*
+ * Optional flags that can be defined from the app code, compiler or config header:
+ *  - LU_DEBUG
+ *  - LU_DISABLE_CONTRACTS: changes lu_err_expects and lu_err_ensures implementations to no-op.
+ *  - LU_DISABLE_ASSERTS: changes lu_err_assert implementation to no-op.
+ */
 
 #ifdef LU_INTERNAL_STRINGIFY_EX
 #undef LU_INTERNAL_STRINGIFY_EX
@@ -58,6 +65,14 @@
 #endif
 #endif
 
+#if LU_HAS_BUILTIN(__builtin_trap)
+#define LU_ABORT_BREAKPOINT __builtin_trap
+#elif LU_HAS_BUILTIN(__debugbreak)
+#define LU_ABORT_BREAKPOINT __debugbreak
+#else
+#define LU_ABORT_BREAKPOINT abort
+#endif
+
 #define LU_ASSERT_ASSIGNABLE_TYPE(TYPE, VALUE) ((TYPE){ 0 } = (VALUE))
 
 #define LU_ARR_SIZE(ARR) (sizeof(ARR) / sizeof(ARR[0]))
@@ -71,4 +86,4 @@
 #define LU_VEC(...)                                                           \
     LU_EXPAND(LU_GET_VEC_EX(__VA_ARGS__, LU_VEC4, LU_VEC3, LU_VEC2)(__VA_ARGS__))
 
-#endif /* __LLULU_DEFS_H__ */
+#endif /* LLULU_LU_DEFS_H */
