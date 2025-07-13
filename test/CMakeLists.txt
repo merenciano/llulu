@@ -9,4 +9,8 @@ target_include_directories(mat4_test PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/../include
 )
 
+target_link_libraries(mat4_test PRIVATE
+    m
+)
+
 add_test(NAME mat4_test COMMAND mat4_test)
