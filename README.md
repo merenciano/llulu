@@ -1,7 +1,7 @@
 # LLUc's LibUtils
 Collection of utilities written in C99.
 
-##TODO
+## TODO
 - Memory mapping
 - Simple math (vec and lerp)
 - Dynamic array
