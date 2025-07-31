@@ -1,14 +1,17 @@
+#include <llulu/lu_str.h>
 #include <llulu/lu_time.h>
 #include <llulu/lu_defs.h>
-#include "bench_sstr_data.h"
-#include <stdio.h>
+#include <llulu/lu_log.h>
 #include <stdint.h> 
 #include <stdlib.h>
 
-static const size_t ITERATIONS = 1UL << 25UL;
+static const lu_sstr bench_data[] = {
+    {"#!m1=5}qYO"}, {"xdN4;Z}4pwZL`!>O'NQ&>`"}, {"R]1+_`8Y>y'P7`MHSF!&#?T'j&,"}, {"cL[Bf#<{Zw"}, {"*0CVUuzWu}Y4T`!Wi(<5a]oG^-"}, {":f="}, {"mJ>D5>X"}, {"=4<nq<GD`q>bK{nn7U."},
+    {"B"}, {"NeVb/j@@)03BUlc7_gTA4O2cd0s(bCk"}, {"mGo/du?t9sb|*Bebw-qypW+"}, {"]j(H*7KxF1ob')Wg'^+i<lbI"}, {"]95e{oR#9V,Ps0qW5y.{}k&g"}, {"oKPO)fdkaU=clql>pn1bg6[r"}, {"[_6Df(l8Tr{8^^kzAYk0v]}"}, {"__mr=a$u@79)<>pu<*UwtO;M=JCyGI"}};
 
-static void lu_sstr_bench()
+int main(int argc, char **argv)
 {
+    enum { ITERATIONS = 1UL << 25UL };
     int idx = 0;
     lu_sstr str;
     bool cnd;
@@ -20,8 +23,8 @@ static void lu_sstr_bench()
             lu_sstr_copy(&a, str.str);
         }
 
-	++idx;
-	idx = idx & 15;
+        ++idx;
+        idx = idx & 15;
 
         lu_sstr b = bench_data[idx];
 
@@ -40,11 +43,6 @@ static void lu_sstr_bench()
     }
 
     uint64_t lapse = lu_time_elapsed(start);
-    printf("Elapsed test lu_str: %f sec. (%s, %d)\n", lu_time_sec(lapse), str.str, cnd);
-}
-
-int main(int argc, char **argv)
-{
-    lu_sstr_bench();
+    lu_log("Elapsed test lu_str: %f sec. (%s, %d)\n", lu_time_sec(lapse), str.str, cnd);
     return 0;
 }
