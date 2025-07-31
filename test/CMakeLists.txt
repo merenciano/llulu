@@ -14,3 +14,12 @@ target_link_libraries(mat4_test PRIVATE
 )
 
 add_test(NAME mat4_test COMMAND mat4_test)
+
+add_executable(bench)
+target_sources(bench PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}/bench.c
+)
+
+target_include_directories(bench PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}/../include
+)

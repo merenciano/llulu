@@ -5,8 +5,19 @@
 #include <stdint.h> 
 #include <stdlib.h>
 
-
 static const size_t ITERATIONS = 2048UL << 22UL;
+
+const char *g_commit_sha;
+
+typedef struct bench_entry {
+    char name[128];
+    char date[32];
+    int iterations;
+    int64_t min_ns;
+    int64_t max_ns;
+    int64_t mean_ns;
+    int64_t stddev_ns;
+} bench_entry;
 
 int main(void)
 {

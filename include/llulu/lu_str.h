@@ -163,5 +163,4 @@ lu_sstr_hash(lu_sstr *self)
 }
 #endif
 
-#endif /* LLULU_STRING_H
-
+#endif /* LLULU_STRING_H */

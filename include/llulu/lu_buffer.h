@@ -31,7 +31,7 @@ typedef struct lu_ring {
 static inline void *lu_array_push(lu_array *self)
 {
     if ((self->count + 1) * self->elem_sz > self->buf.size) {
-        void *new_data = malloc(self->buf.size * 2);
+        char *new_data = (char*)malloc(self->buf.size * 2);
         if (new_data) {
             memcpy(new_data, self->buf.data, self->buf.size);
             free(self->buf.data);

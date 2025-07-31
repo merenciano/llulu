@@ -6,6 +6,9 @@ on:
   pull_request:
     branches: [ master ]
 
+env:
+  ACT: 'false'  # Cambia a 'true' para pruebas locales
+
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
@@ -16,10 +19,10 @@ jobs:
       - name: Setup Dependencies
         run: |
           sudo apt update
-          sudo apt install -y valgrind linux-tools-generic libpapi-dev
+          sudo apt install -y valgrind linux-tools-generic libpapi-dev cmake
 
       - name: Configure CMake
-        run: cmake -B build -DCMAKE_BUILD_TYPE=Debug
+        run: cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
 
       - name: Build
         run: cmake --build build --parallel
@@ -30,31 +33,71 @@ jobs:
       - name: Valgrind Memcheck
         run: ctest --test-dir build -T memcheck
 
-      - name: Valgrind Cachegrind
+      - name: Run Valgrind Cachegrind
         run: valgrind --tool=cachegrind --cachegrind-out-file=cachegrind.out build/test/mat4_test
-      - uses: actions/upload-artifact@v4
+
+      - name: Run Valgrind Callgrind
+        run: valgrind --tool=callgrind --callgrind-out-file=callgrind.out build/test/mat4_test
+
+      - name: Run Valgrind Massif
+        run: valgrind --tool=massif --massif-out-file=massif.out build/test/mat4_test
+
+      - name: Run Valgrind Helgrind
+        run: valgrind --tool=helgrind --log-file=helgrind.out build/test/mat4_test
+
+      - name: Save Valgrind artifacts locally
+        if: ${{ env.ACT == 'true' }}
+        run: |
+          mkdir -p artifacts-local
+          mv cachegrind.out artifacts-local/
+          mv callgrind.out artifacts-local/
+          mv massif.out artifacts-local/
+          mv helgrind.out artifacts-local/
+
+      - name: Upload Cachegrind artifact
+        if: ${{ env.ACT != 'true' }}
+        uses: actions/upload-artifact@v4
         with:
           name: cachegrind-profile
           path: cachegrind.out
 
-      - name: Valgrind Callgrind
-        run: valgrind --tool=callgrind --callgrind-out-file=callgrind.out build/test/mat4_test
-      - uses: actions/upload-artifact@v4
+      - name: Upload Callgrind artifact
+        if: ${{ env.ACT != 'true' }}
+        uses: actions/upload-artifact@v4
         with:
           name: callgrind-profile
           path: callgrind.out
 
-      - name: Valgrind Massif
-        run: valgrind --tool=massif --massif-out-file=massif.out build/test/mat4_test
-      - uses: actions/upload-artifact@v4
+      - name: Upload Massif artifact
+        if: ${{ env.ACT != 'true' }}
+        uses: actions/upload-artifact@v4
         with:
           name: massif-profile
           path: massif.out
 
-      - name: Valgrind Helgrind
-        run: valgrind --tool=helgrind --log-file=helgrind.out build/test/mat4_test
-      - uses: actions/upload-artifact@v4
+      - name: Upload Helgrind artifact
+        if: ${{ env.ACT != 'true' }}
+        uses: actions/upload-artifact@v4
         with:
           name: helgrind-profile
           path: helgrind.out
+
+      - name: Run perf stat
+        run: |
+          perf stat -e cycles,instructions,cache-references,cache-misses,branch-instructions,branch-misses ./build/test/mat4_test 2> perf_stat.txt || true
+
+
+      - name: Upload perf stat results
+        if: ${{ env.ACT != 'true' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: perf-stat
+          path: perf_stat.txt
+
+      - name: Save perf stat locally
+        if: ${{ env.ACT == 'true' }}
+        run: |
+          mkdir -p artifacts-local
+          mv perf_stat.txt artifacts-local/
+
 
