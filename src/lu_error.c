@@ -29,7 +29,7 @@ lu_err_open_file(void)
     lu_err_expects(!err_ostream);
     static lu_hook_task close_file_task = {.task_data = NULL, .next = NULL, .run = lu_err_close_file};
     char buf[16];
-    lu_time_date_str(buf);
+    lu_time_fmt_date(buf);
     char filename[32];
     sprintf(filename, "xe_errlogs_%s.txt", buf);
     err_ostream = fopen(filename, "a");
@@ -46,7 +46,7 @@ lu_err_to_file_ex(int err_code, const char *file, const char *func_name, int lin
 
     lu_err_expects(err_ostream);
     char time[16];
-    lu_time_hms_str(time);
+    lu_time_fmt_time(time);
     va_list args;
     va_start(args, line);
     const char *fmt = va_arg(args, const char*);
