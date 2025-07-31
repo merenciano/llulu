@@ -2,6 +2,7 @@
 
 #include <stdbool.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 #define TEST_FAIL "\033[0;31mFAIL\033[0m"
 #define TEST_PASS "\033[0;32mPASS\033[0m"
@@ -28,6 +29,7 @@ static void do_test(const char *name, bool result, const char *func, int line)
     printf("[%s] %s | %s\n", res_to_str[result], g_test_module, name);
     if (!result) {
         printf("  -> %s:%s(%d)\n", __FILE__, func, line);
+        exit(1);
     }
 }
 

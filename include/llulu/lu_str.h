@@ -1,13 +1,13 @@
-#ifndef LLULU_STRING_H
-#define LLULU_STRING_H
+#ifndef LLULU_LU_STR_H
+#define LLULU_LU_STR_H
 
 #include "lu_hash.h"
 #include "lu_math.h"
+#include "lu_error.h"
 
 #include <stdbool.h>
 #include <stdint.h>
 #include <string.h>
-#include <assert.h>
 
 /* Small string. */
 #define LU_SSTRLEN 32
@@ -24,29 +24,29 @@ typedef struct lu_sstr {
 static inline void
 lu_sstr_clear(lu_sstr *self)
 {
-    assert(self);
+    lu_err_expects(self);
     *self = (lu_sstr){0};
-    assert(!(((size_t*)self)[0] | ((size_t*)self)[1] | ((size_t*)self)[2] | ((size_t*)self)[3]));
+    lu_err_ensures(!(((size_t*)self)[0] | ((size_t*)self)[1] | ((size_t*)self)[2] | ((size_t*)self)[3]));
 }
 
 static inline bool
 lu_sstr_empty(const lu_sstr *self)
 {
-    assert(self);
+    lu_err_expects(self);
     return !self->str[0];
 }
 
 static inline bool
 lu_sstr_equal(const lu_sstr *self, const lu_sstr *other)
 { 
-    assert(self && other);
+    lu_err_expects(self && other);
     return !memcmp(self, other, LU_SSTRLEN);
 }
 
 static inline bool
 lu_sstr_equal_0(const lu_sstr *self, const lu_sstr *other)
 { 
-    assert(self && other);
+    lu_err_expects(self && other);
     return ((size_t*)self)[0] == ((size_t*)other)[0] &&
            ((size_t*)self)[1] == ((size_t*)other)[1] &&
            ((size_t*)self)[2] == ((size_t*)other)[2] &&
@@ -56,7 +56,7 @@ lu_sstr_equal_0(const lu_sstr *self, const lu_sstr *other)
 static inline void
 lu_sstr_copy(lu_sstr *dst, const char *src)
 {
-    assert(dst && src);
+    lu_err_expects(dst && src);
     lu_sstr_clear(dst);
     strncpy(dst->str, src, LU_SSTRLEN - 1);
 }
@@ -64,7 +64,7 @@ lu_sstr_copy(lu_sstr *dst, const char *src)
 static inline void
 lu_sstr_copy_0(lu_sstr * restrict dst, const char * restrict src)
 {
-    assert(dst && src);
+    lu_err_expects(dst && src);
     lu_sstr_clear(dst);
 
     for (int i = 0; i < (LU_SSTRLEN - 1) && *src; ++i) {
@@ -75,7 +75,7 @@ lu_sstr_copy_0(lu_sstr * restrict dst, const char * restrict src)
 static inline lu_sstr * 
 lu_sstr_memcpy(lu_sstr *dst, const void *src, size_t bytes)
 {
-    assert(dst && src);
+    lu_err_expects(dst && src);
     lu_sstr_clear(dst);
     memcpy(dst->str, src, lu_minu(bytes, LU_SSTRLEN - 1));
     return dst;
@@ -84,7 +84,7 @@ lu_sstr_memcpy(lu_sstr *dst, const void *src, size_t bytes)
 static inline lu_sstr *
 lu_sstr_memcpy_0(lu_sstr * restrict dst, const void * restrict src, size_t bytes)
 {
-    assert(dst && src);
+    lu_err_expects(dst && src);
     if (!bytes || &dst->str[0] == src) {
         return dst;
     }
@@ -106,14 +106,14 @@ lu_sstr_memcpy_0(lu_sstr * restrict dst, const void * restrict src, size_t bytes
 static inline int
 lu_sstr_cmpstr(const lu_sstr *self, const char *other)
 {
-    assert(self && other);
+    lu_err_expects(self && other);
     return strncmp(self->str, other, LU_SSTRLEN);
 }
 
 static inline int
 lu_sstr_cmpstr_0(const lu_sstr *self, const char *other)
 {
-    assert(self && other);
+    lu_err_expects(self && other);
     const char *s = self->str;
     int d = *s - *other;
 
@@ -129,14 +129,14 @@ lu_sstr_cmpstr_0(const lu_sstr *self, const char *other)
 static inline int
 lu_sstr_cmpmem(const lu_sstr *self, const void *other, size_t bytes)
 {
-    assert(self && other);
+    lu_err_expects(self && other);
     return memcmp(self->str, other, lu_minu(bytes, LU_SSTRLEN));
 }
 
 static inline int
 lu_sstr_cmpmem_0(const lu_sstr *self, const void *other, size_t bytes)
 {
-    assert(self && other);
+    lu_err_expects(self && other);
     const int count = lu_minu(bytes, LU_SSTRLEN);
 
     const char *s = self->str;
@@ -155,12 +155,12 @@ lu_sstr_cmpmem_0(const lu_sstr *self, const void *other, size_t bytes)
 static inline uint64_t
 lu_sstr_hash(lu_sstr *self)
 {
-    assert(self);
+    lu_err_expects(self);
     return lu_hash_32bytes((const uint8_t*)self);
 }
 
 #ifdef __cplusplus
 }
 #endif
+#endif /* LLULU_LU_STR_H */
 
-#endif /* LLULU_STRING_H */
