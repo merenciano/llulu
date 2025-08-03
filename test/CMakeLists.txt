@@ -15,11 +15,18 @@ target_link_libraries(mat4_test PRIVATE
 
 add_test(NAME mat4_test COMMAND mat4_test)
 
-add_executable(bench)
-target_sources(bench PRIVATE
-    ${CMAKE_CURRENT_SOURCE_DIR}/bench.c
+add_executable(test_data_types)
+target_sources(test_data_types PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}/test_data_types.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/../src/lu_time.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/../src/lu_log.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/../src/lu_error.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/../src/lu_hooks.c
 )
 
-target_include_directories(bench PRIVATE
+target_include_directories(test_data_types PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/../include
 )
+
+add_test(NAME test_data_types COMMAND test_data_types)
+

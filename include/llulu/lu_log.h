@@ -14,31 +14,64 @@
 #endif
 
 #ifndef LU_INTERNAL_LOG
-#define LU_INTERNAL_LOG(TAG,...) lu_log_ex(TAG, __FILE__, __LINE__, __VA_ARGS__)
+#define LU_INTERNAL_LOG(TAG,...) lu_log_ex(TAG, __func__, __FILE__, __LINE__, __VA_ARGS__)
 #endif
 
 #ifndef lu_log_verbose 
-#define lu_log_verbose(...) LU_INTERNAL_LOG("LU_VERBOSE", __VA_ARGS__)
+#define lu_log_verbose(...) LU_INTERNAL_LOG(LU_LOG_VERBOSE, __VA_ARGS__)
 #endif
 
 #ifndef lu_log 
-#define lu_log(...) LU_INTERNAL_LOG("LU_LOG", __VA_ARGS__)
+#define lu_log(...) LU_INTERNAL_LOG(LU_LOG_LOG, __VA_ARGS__)
 #endif
 
 #ifndef lu_log_warn
-#define lu_log_warn(...) LU_INTERNAL_LOG("LU_WARN", __VA_ARGS__)
+#define lu_log_warn(...) LU_INTERNAL_LOG(LU_LOG_WARNING, __VA_ARGS__)
 #endif
 
-#define lu_log_err(...) LU_INTERNAL_LOG("LU_ERR", __VA_ARGS__)
-#define lu_log_panic(...) LU_INTERNAL_LOG("LU_PANIC", __VA_ARGS__)
+#define lu_log_err(...) LU_INTERNAL_LOG(LU_LOG_ERROR, __VA_ARGS__)
+#define lu_log_panic(...) LU_INTERNAL_LOG(LU_LOG_PANIC, __VA_ARGS__)
+
+enum lu_log_config_flags {
+    LU_LOG_COLOR   = 0x0001,
+    LU_LOG_DATE    = 0x0002,
+    LU_LOG_TIME    = 0x0004, /* HH:MM */
+    LU_LOG_SECONDS = 0x0008,
+    LU_LOG_FILE    = 0x0010,
+    LU_LOG_FUNC    = 0x0020,
+};
+
+enum lu_log_levels {
+    LU_LOG_PANIC = 0,
+    LU_LOG_ERROR,
+    LU_LOG_WARNING,
+    LU_LOG_LOG,
+    LU_LOG_VERBOSE,
+    LU_LOG_LEVELS
+};
+
+/**
+ * @brief Logger configuration. Enable or disable the desired options.
+ * @param flags One or more flags from the enum @see @enum lu_log_config_flags. 
+ * @param enable Choose between enable or disable the options specified in the flags.
+ */
+void lu_log_setopt(int flags, bool enable);
+
+/**
+ * @brief Checks if the specified option/s is enabled.
+ * @param flags Flags from the enum @see @enum lu_log_config_flags.
+ * @return The result of the operation (log_config.flags & flags).
+ */
+int lu_log_getopt(int flags);
 
 /**
  * Extended log, usually called from log macros.
- * @param tag Log header for emitter identifier and log level.
+ * @param tag Tag, use the enum values @see @enum lu_log_levels.
+ * @param func Function name, usually from __func__ macro.
  * @param file Filename, usually from __FILE__ macro.
  * @param line File line of the log call, usually from __LINE__ macro.
  * @param var_args Text format and values.
  */
-lu_err lu_log_ex(const char *tag, const char *file, int line, ...);
+lu_err lu_log_ex(int tag, const char *func, const char *file, int line, ...);
 
 #endif /* LLULU_LU_LOG_H */

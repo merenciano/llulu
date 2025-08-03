@@ -115,15 +115,16 @@ lu_sstr_cmpstr_0(const lu_sstr *self, const char *other)
 {
     lu_err_expects(self && other);
     const char *s = self->str;
-    int d = *s - *other;
-
-    for (int i = 0; i < LU_SSTRLEN && !d; ++i) {
-        if (!*s) {
-            return d;
-        }
-        d = *s++ - *other++;
+    while (*s && (*s == *other)) {
+        s++;
+        other++;
     }
-    return d;
+
+#ifdef _WIN32
+    return *s > *other ? 1 : *s == *other ? 0 : -1;
+#else
+    return *(unsigned char*)s - *(unsigned char*)other;
+#endif
 }
 
 static inline int

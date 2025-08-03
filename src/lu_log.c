@@ -1,3 +1,4 @@
+#include <llulu/lu_time.h>
 #include <llulu/lu_log.h>
 #include <llulu/lu_error.h>
 
@@ -5,25 +6,81 @@
 #include <stdio.h>
 #include <assert.h>
 #include <stdbool.h>
+#include <stdlib.h>
+#include <string.h>
 
-static void *log_ostream;
+#define LU_LOG_RSTCOLOR      "\033[0m"
+#define LU_LOG_BLACK         "\033[30m"
+#define LU_LOG_GRAY          "\033[1;30m"
+#define LU_LOG_RED           "\033[31m"
+#define LU_LOG_RED_BRIGHT    "\e[1:51:97:101m"
+#define LU_LOG_BG_RED        "\033[31:3m"
+#define LU_LOG_GREEN         "\033[32m"
+#define LU_LOG_YELLOW        "\033[33m"
+
+struct {
+    void *ostream;
+    uint32_t flags;
+} static log_ctx;
+
+inline void
+lu_log_setopt(int flags, bool enable)
+{
+    if (enable) {
+        log_ctx.flags |= flags;
+    } else {
+        log_ctx.flags &= ~flags;
+    }
+}
+
+inline int 
+lu_log_getopt(int flags)
+{
+    return log_ctx.flags & flags;
+}
+
+static inline const char *
+log_get_tag_color(int tag)
+{
+    switch(tag) {
+        case LU_LOG_PANIC:   return LU_LOG_RED_BRIGHT;
+        case LU_LOG_ERROR:   return LU_LOG_RED;
+        case LU_LOG_WARNING: return LU_LOG_YELLOW;
+        case LU_LOG_LOG:     return LU_LOG_RSTCOLOR;
+        case LU_LOG_VERBOSE: return LU_LOG_GRAY;
+        default: lu_err_assert(false); return LU_LOG_BLACK;
+    }
+}
+
+static inline const char *
+log_get_tag_name(int tag)
+{
+    switch(tag) {
+        case LU_LOG_PANIC:   return "LU_PANIC";
+        case LU_LOG_ERROR:   return "LU_ERROR";
+        case LU_LOG_WARNING: return "LU_WARN";
+        case LU_LOG_LOG:     return "LU_LOG";
+        case LU_LOG_VERBOSE: return "LU_VERBOSE";
+        default: lu_err_assert(false); return "LU_UNKNOWN";
+    }
+}
 
 lu_err
 lu_log_open(const char *log_filename)
 {
-    if (log_ostream && log_ostream != stdout) {
+    if (log_ctx.ostream && log_ctx.ostream != stdout) {
         lu_log_warn("Can not open a new log stream since another one is being used. If the desired behavior is to replace the current one with %s, close it with lu_log_close before attempting to open another.", log_filename);
         return LU_ERR_STREAM_OPEN;
     }
 
-    log_ostream = fopen(log_filename, "w");
-    if (!log_ostream) {
-        log_ostream = stdout;
+    log_ctx.ostream = fopen(log_filename, "w");
+    if (!log_ctx.ostream) {
+        log_ctx.ostream = stdout;
         lu_log_warn("fopen file %s failed, using stdout instead.", log_filename);
         return LU_ERR_FALLBACK;
     }
 
-    assert(log_ostream);
+    assert(log_ctx.ostream);
     return LU_ERR_SUCCESS;
 }
 
@@ -31,29 +88,79 @@ lu_err
 lu_log_close(void)
 {
     int fclose_ret = 0;
-    if (log_ostream && log_ostream != stdout) {
-        fclose_ret = fclose(log_ostream);
+    if (log_ctx.ostream && log_ctx.ostream != stdout) {
+        fclose_ret = fclose(log_ctx.ostream);
     }
-    log_ostream = NULL;
+    log_ctx.ostream = NULL;
     return fclose_ret == 0 ? LU_ERR_SUCCESS : LU_ERR_STREAM;
 }
 
 lu_err
-lu_log_ex(const char *tag, const char *file, int line, ...)
+lu_log_ex(int tag, const char *func, const char *file, int line, ...)
 {
+    char date_buf[16] = {0};
+    char time_buf[16] = {0};
+    char source_buf[1024] = {0};
     int err = LU_ERR_SUCCESS;
-    if (!log_ostream) {
-        log_ostream = stdout;
+    if (!log_ctx.ostream) {
+        log_ctx.ostream = stdout;
         lu_log_verbose("Log stream is NULL; falling back to stdout.");
         err = LU_ERR_FALLBACK;
+    }
+
+    bool color = log_ctx.flags & LU_LOG_COLOR;
+    bool date = log_ctx.flags & LU_LOG_DATE;
+    int time = log_ctx.flags & (LU_LOG_TIME | LU_LOG_SECONDS);
+    int source = log_ctx.flags & (LU_LOG_FUNC | LU_LOG_FILE);
+
+    if (time & LU_LOG_TIME) {
+        lu_time_fmt_time(time_buf);
+        if (time == LU_LOG_TIME) { 
+            /* LU_LOG_SECONDS IS DISABLED */
+            char *it = &time_buf[3]; /* Avoiding the H:M separator so next is seconds */
+            while (*it) {
+                if (*it == ':') {
+                    *it = '\0';
+                } else {
+                    it++;
+                }
+            }
+        }
+    }
+
+    if (source) {
+        if (source & LU_LOG_FUNC) {
+            char *it = source_buf;
+            uint64_t len = strlen(func);
+            memcpy(it, func, len);
+            it += len;
+            if (source & LU_LOG_FILE) {
+                *it++ = '@';
+                len = strlen(file);
+                memcpy(it, file, len);
+                it += len;
+            }
+            *it++ = '(';
+            memset(it, 0, 8);
+            _itoa_s(line, it, sizeof(source_buf) - (it - source_buf), 10);
+            for (;*it;++it);
+            *it++ = ')';
+            *it++ = ':';
+        }
     }
 
     va_list args;
     va_start(args, line);
     const char *fmt = va_arg(args, const char*);
-    fprintf(log_ostream, "[%s] %s(%d): ", tag, file, line);
-    vfprintf(log_ostream, fmt, args);
-    fputc('\n', log_ostream);
+    fprintf(log_ctx.ostream, "%s[%s]%s %s %s %s ",
+        color ? log_get_tag_color(tag) : "",
+        log_get_tag_name(tag),
+        color ? LU_LOG_RSTCOLOR : "",
+        date ? lu_time_fmt_date(date_buf) : "",
+        time_buf,
+        source_buf);
+    vfprintf(log_ctx.ostream, fmt, args);
+    fputc('\n', log_ctx.ostream);
     va_end(args);
     return err;
 }
