@@ -36,7 +36,7 @@ enum lu_log_config_flags {
     LU_LOG_COLOR   = 0x0001,
     LU_LOG_DATE    = 0x0002,
     LU_LOG_TIME    = 0x0004, /* HH:MM */
-    LU_LOG_SECONDS = 0x0008,
+    LU_LOG_SECONDS = 0x0008, /* HH:MM:SS */
     LU_LOG_FILE    = 0x0010,
     LU_LOG_FUNC    = 0x0020,
 };
@@ -47,6 +47,7 @@ enum lu_log_levels {
     LU_LOG_WARNING,
     LU_LOG_LOG,
     LU_LOG_VERBOSE,
+    LU_LOG_CUSTOM, /* User-defined tag */
     LU_LOG_LEVELS
 };
 
@@ -56,22 +57,19 @@ enum lu_log_levels {
  * @param enable Choose between enable or disable the options specified in the flags.
  */
 void lu_log_setopt(int flags, bool enable);
+void lu_log_set_custom_tag(const char *tag);
 
-/**
- * @brief Checks if the specified option/s is enabled.
- * @param flags Flags from the enum @see @enum lu_log_config_flags.
- * @return The result of the operation (log_config.flags & flags).
- */
-int lu_log_getopt(int flags);
+lu_err lu_log_open(const char *log_filename);
+lu_err lu_log_close(void);
 
 /**
  * Extended log, usually called from log macros.
- * @param tag Tag, use the enum values @see @enum lu_log_levels.
+ * @param log_level Use the enum values @see @enum lu_log_levels.
  * @param func Function name, usually from __func__ macro.
  * @param file Filename, usually from __FILE__ macro.
  * @param line File line of the log call, usually from __LINE__ macro.
  * @param var_args Text format and values.
  */
-lu_err lu_log_ex(int tag, const char *func, const char *file, int line, ...);
+lu_err lu_log_ex(int log_level, const char *func, const char *file, int line, ...);
 
 #endif /* LLULU_LU_LOG_H */

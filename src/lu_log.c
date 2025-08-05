@@ -9,18 +9,19 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define LU_LOG_RSTCOLOR      "\033[0m"
-#define LU_LOG_BLACK         "\033[30m"
-#define LU_LOG_GRAY          "\033[1;30m"
-#define LU_LOG_RED           "\033[31m"
+#define LU_LOG_RSTCOLOR      "\e[0m"
+#define LU_LOG_BLACK         "\e[30m"
+#define LU_LOG_GRAY          "\e[1;30m"
+#define LU_LOG_RED           "\e[31m"
 #define LU_LOG_RED_BRIGHT    "\e[1:51:97:101m"
-#define LU_LOG_BG_RED        "\033[31:3m"
-#define LU_LOG_GREEN         "\033[32m"
-#define LU_LOG_YELLOW        "\033[33m"
+#define LU_LOG_GREEN         "\e[32m"
+#define LU_LOG_YELLOW        "\e[33m"
+#define LU_LOG_BLUE          "\e[94m"
 
 struct {
     void *ostream;
     uint32_t flags;
+    char custom_tag[28];
 } static log_ctx;
 
 inline void
@@ -33,14 +34,8 @@ lu_log_setopt(int flags, bool enable)
     }
 }
 
-inline int 
-lu_log_getopt(int flags)
-{
-    return log_ctx.flags & flags;
-}
-
 static inline const char *
-log_get_tag_color(int tag)
+log_get_loglvl_color(int tag)
 {
     switch(tag) {
         case LU_LOG_PANIC:   return LU_LOG_RED_BRIGHT;
@@ -48,12 +43,13 @@ log_get_tag_color(int tag)
         case LU_LOG_WARNING: return LU_LOG_YELLOW;
         case LU_LOG_LOG:     return LU_LOG_RSTCOLOR;
         case LU_LOG_VERBOSE: return LU_LOG_GRAY;
-        default: lu_err_assert(false); return LU_LOG_BLACK;
+        case LU_LOG_CUSTOM: return LU_LOG_BLUE;
+        default: assert(false); return LU_LOG_RSTCOLOR;
     }
 }
 
 static inline const char *
-log_get_tag_name(int tag)
+log_get_loglvl_name(int tag)
 {
     switch(tag) {
         case LU_LOG_PANIC:   return "LU_PANIC";
@@ -61,8 +57,14 @@ log_get_tag_name(int tag)
         case LU_LOG_WARNING: return "LU_WARN";
         case LU_LOG_LOG:     return "LU_LOG";
         case LU_LOG_VERBOSE: return "LU_VERBOSE";
-        default: lu_err_assert(false); return "LU_UNKNOWN";
+        case LU_LOG_CUSTOM:  return log_ctx.custom_tag;
+        default: assert(false); return "";
     }
+}
+
+void lu_log_set_custom_tag(const char *tag)
+{
+    strncpy(log_ctx.custom_tag, tag, sizeof(log_ctx.custom_tag) - 1);
 }
 
 lu_err
@@ -96,10 +98,10 @@ lu_log_close(void)
 }
 
 lu_err
-lu_log_ex(int tag, const char *func, const char *file, int line, ...)
+lu_log_ex(int loglvl, const char *func, const char *file, int line, ...)
 {
     char date_buf[16] = {0};
-    char time_buf[16] = {0};
+    char time_buf[17] = {0};
     char source_buf[1024] = {0};
     int err = LU_ERR_SUCCESS;
     if (!log_ctx.ostream) {
@@ -114,10 +116,11 @@ lu_log_ex(int tag, const char *func, const char *file, int line, ...)
     int source = log_ctx.flags & (LU_LOG_FUNC | LU_LOG_FILE);
 
     if (time & LU_LOG_TIME) {
-        lu_time_fmt_time(time_buf);
+        time_buf[0] = ' ';
+        lu_time_fmt_time(time_buf + 1);
         if (time == LU_LOG_TIME) { 
             /* LU_LOG_SECONDS IS DISABLED */
-            char *it = &time_buf[3]; /* Avoiding the H:M separator so next is seconds */
+            char *it = &time_buf[4]; /* Avoiding the H:M separator so next is seconds */
             while (*it) {
                 if (*it == ':') {
                     *it = '\0';
@@ -131,6 +134,7 @@ lu_log_ex(int tag, const char *func, const char *file, int line, ...)
     if (source) {
         if (source & LU_LOG_FUNC) {
             char *it = source_buf;
+            *it++ = ' ';
             uint64_t len = strlen(func);
             memcpy(it, func, len);
             it += len;
@@ -146,15 +150,16 @@ lu_log_ex(int tag, const char *func, const char *file, int line, ...)
             for (;*it;++it);
             *it++ = ')';
             *it++ = ':';
+            *it++ = ' ';
         }
     }
 
     va_list args;
     va_start(args, line);
     const char *fmt = va_arg(args, const char*);
-    fprintf(log_ctx.ostream, "%s[%s]%s %s %s %s ",
-        color ? log_get_tag_color(tag) : "",
-        log_get_tag_name(tag),
+    fprintf(log_ctx.ostream, "%s[%s]%s %s%s%s",
+        color ? log_get_loglvl_color(loglvl) : "",
+        log_get_loglvl_name(loglvl),
         color ? LU_LOG_RSTCOLOR : "",
         date ? lu_time_fmt_date(date_buf) : "",
         time_buf,

@@ -9,7 +9,6 @@
  *  The correct implementation can be found in random.h from https://github.com/stclib/STC.
  */
 
-
 typedef struct lu_rng {
     uint64_t state[4];
 } lu_rng;
@@ -63,7 +62,8 @@ static inline char *lu_rng_get_text(lu_rng *rng, uint64_t stream, char *buf, siz
 
 /* Global single sequence generator functions */
 
-static inline lu_rng *lu_rng_g(void)
+static inline lu_rng *
+lu_rng_g(void)
 {
     static lu_rng rng = {{0X9E3779BB07979AF0,0X6F682616BAE3641A,0XE220A8397B1DCDAF,0X1}};
     return &rng;
@@ -75,17 +75,20 @@ lu_rng_seedg(uint64_t seed)
     lu_rng_seed(lu_rng_g(), seed);
 }
 
-static inline uint64_t lu_rng_getg(void)
+static inline uint64_t
+lu_rng_getg(void)
 {
     return lu_rng_get(lu_rng_g(), 1);
 }
 
-static inline uint64_t lu_rng_getfg(void)
+static inline double
+lu_rng_getfg(void)
 {
     return lu_rng_getf(lu_rng_g(), 1);
 }
 
-static inline char *lu_rng_textg(char *buf, size_t count)
+static inline char *
+lu_rng_textg(char *buf, size_t count)
 {
     return lu_rng_get_text(lu_rng_g(), 1, buf, count);
 }

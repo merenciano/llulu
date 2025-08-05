@@ -31,7 +31,7 @@ lu_err_open_file(void)
     char buf[16];
     lu_time_fmt_date(buf);
     char filename[32];
-    sprintf(filename, "xe_errlogs_%s.txt", buf);
+    sprintf(filename, "lu_errors_%s.txt", buf);
     err_ostream = fopen(filename, "a");
     lu_hook_attach(LU_HOOK_POST_SHUTDOWN, LU_PRIORITY_INTERRUPT, &close_file_task);
     lu_err_ensures(err_ostream);
