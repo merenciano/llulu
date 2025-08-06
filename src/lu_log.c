@@ -146,7 +146,7 @@ lu_log_ex(int loglvl, const char *func, const char *file, int line, ...)
             }
             *it++ = '(';
             memset(it, 0, 8);
-            _itoa_s(line, it, sizeof(source_buf) - (it - source_buf), 10);
+            sprintf(it, "%d", line);
             for (;*it;++it);
             *it++ = ')';
             *it++ = ':';

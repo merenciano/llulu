@@ -1,6 +1,7 @@
 #ifndef LLULU_LU_RNG_H
 #define LLULU_LU_RNG_H
 
+#include <stddef.h>
 #include <stdint.h>
 
 /*

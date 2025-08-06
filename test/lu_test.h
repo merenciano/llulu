@@ -3,6 +3,7 @@
 
 #include <llulu/lu_log.h>
 #include <llulu/lu_time.h>
+#include <llulu/lu_rng.h>
 
 #define LU_TEST_TAG "LU_TEST"
 #define LU_TEST_FAIL "\e[1:51:97:101mFAIL\e[0m"

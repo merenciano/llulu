@@ -11,6 +11,15 @@ target_include_directories(bench_str PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/../include
 )
 
+target_compile_definitions(bench_str PRIVATE
+    LU_DISABLE_ASSERTS
+    LU_DISABLE_CONTRACTS
+)
+
+target_link_libraries(bench_str PRIVATE
+    m
+)
+
 add_executable(test_data_types)
 target_sources(test_data_types PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/test_data_types.c
