@@ -20,7 +20,7 @@ static inline bool
 lu_hmap_empty_or_equal(lu_hmap *hm, int index, lu_sstr *k)
 {
     const lu_sstr *key = &hm->data[index].key;
-    return lu_sstr_empty(key) || lu_sstr_equal(k, key);
+    return lu_sstr_is_empty(key) || lu_sstr_equals(k, key);
 }
 
 static inline int

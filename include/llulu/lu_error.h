@@ -13,6 +13,8 @@ enum {
     LU_ERR_STREAM_OPEN = -111, /* Could not open the stream, e.g. fopen failed. */
     LU_ERR_FILE = -112, /* File related errors. */
     LU_ERR_BADARG = -120, /* Invalid argument value, e.g. NULL pointer or size == 0. */
+    LU_ERR_MEM = -130, /* Memory-related errors. */
+    LU_ERR_MEM_BUF = -131, /* Invalid buffer, usually not big enough. */
 };
 
 void lu_err_to_file_ex(int err_code, const char *file, const char *func_name, int line, ...);

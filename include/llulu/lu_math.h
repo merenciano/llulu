@@ -3,6 +3,7 @@
 
 #include <stddef.h>
 #include <stdbool.h>
+#include <stdint.h>
 #include <math.h>
 
 #define LU_PI 3.14159265358979323846f
@@ -17,6 +18,8 @@ static inline float
 lu_acos(float a) { return acosf(a);}
 static inline float
 lu_sqrt(float x) { return sqrtf(x);}
+static inline double
+lu_sqrtl(double x) { return sqrt(x);}
 static inline float
 lu_atan2(float y, float x) { return atan2f(y, x);}
 static inline float
@@ -47,6 +50,9 @@ lu_lerpf(float a, float b, float t) { return a + (b - a) * t; }
 
 static inline int lu_mini(int a, int b) { return a < b ? a : b; }
 static inline int lu_maxi(int a, int b) { return a >= b ? a : b; }
+
+static inline int lu_minil(int64_t a, int64_t b) { return a < b ? a : b; }
+static inline int lu_maxil(int64_t a, int64_t b) { return a >= b ? a : b; }
 
 static inline size_t lu_minu(size_t a, size_t b) { return a < b ? a : b; }
 static inline size_t lu_maxu(size_t a, size_t b) { return a >= b ? a : b; }
