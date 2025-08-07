@@ -102,7 +102,9 @@ lu_bench_export_json(lu_bench_state *bs, char *out, size_t out_size)
         return LU_ERR_MEM_BUF;
     }
 
-    int ret = snprintf(out, out_size, fmt, bs->name, bs->notes, bs->date, bs->time, bs->iterations, bs->min_ns, bs->max_ns, bs->mean_ns, bs->stddev_ns);
+    int ret = snprintf(out, out_size, fmt,
+        bs->name, bs->notes, bs->date, bs->time, bs->iterations,
+        (long long)bs->min_ns, (long long)bs->max_ns, (long long)bs->mean_ns, (long long)bs->stddev_ns);
     if (ret >= out_size) {
         return LU_ERR_MEM_BUF;
     }

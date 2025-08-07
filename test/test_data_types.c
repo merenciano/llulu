@@ -6,6 +6,7 @@
 #include <llulu/lu_rng.h>
 
 #include <stdlib.h>
+#include <stdio.h>
 
 void test_group_rng(lu_test_state *s);
 void test_group_sstr(lu_test_state *s);
