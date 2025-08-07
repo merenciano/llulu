@@ -1,5 +1,7 @@
+#include "llulu/lu_str.h"
 #include <llulu/lu_buffer.h>
 #include <llulu/lu_sync.h>
+#include <stdbool.h>
 #include <string.h>
 
 lu_err
@@ -247,4 +249,75 @@ void *
 lu_pool_at(lu_pool *self, lu_pool_hnd handle)
 {
     return &self->data[handle * self->elem_sz];
+}
+
+inline void
+lu_map_clear(lu_map *self)
+{
+    memset(self->data, 0, self->elem_cap * sizeof(*self->data));
+}
+
+lu_err
+lu_map_init(lu_map *self, void *buf, size_t elem_cap)
+{
+    self->elem_cap = elem_cap;
+    self->data = buf;
+    return LU_ERR_SUCCESS;
+}
+
+static inline bool
+lu_map_slot_match(lu_map *self, int idx, lu_sstr *k)
+{
+    const lu_sstr * const other = &self->data[idx].key;
+    return lu_sstr_is_empty(other) || lu_sstr_equals(k, other);
+}
+
+static inline int
+lu_map_slot_find(lu_map *self, lu_sstr *k)
+{
+    const int first = lu_sstr_hash(k) % self->elem_cap;
+    int i = first;
+    for (; !lu_map_slot_match(self, i, k); ++i) { /* linear probing */
+        if ((i % self->elem_cap) == first) {
+            return -1;
+        }
+    }
+
+    return i;
+}
+
+lu_err
+lu_map_put(lu_map *self, lu_sstr *key, size_t value)
+{
+    int idx = lu_map_slot_find(self, key);
+    if (idx < 0) {
+        return LU_ERR_CONTAINER_FULL;
+    }
+    self->data[idx].key = *key;
+    self->data[idx].value = value;
+    
+    return LU_ERR_SUCCESS;
+}
+
+lu_err
+lu_map_take(lu_map *self, lu_sstr *key, size_t *out_value)
+{
+    int idx = lu_map_slot_find(self, key);
+    if (idx < 0 || lu_sstr_is_empty(&self->data[idx].key)) {
+        return LU_ERR_NOT_FOUND;
+    }
+
+    lu_sstr_clear(&self->data[idx].key);
+    memcpy(out_value, &self->data[idx].value, sizeof(self->data->value));
+    return LU_ERR_SUCCESS;
+}
+
+size_t *
+lu_map_at(lu_map *self, lu_sstr *key)
+{
+    int idx = lu_map_slot_find(self, key);
+    if (idx < 0 || lu_sstr_is_empty(&self->data[idx].key)) {
+        return NULL;
+    }
+    return &self->data[idx].value;
 }

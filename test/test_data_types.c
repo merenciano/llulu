@@ -4,13 +4,15 @@
 #include <llulu/lu_math.h>
 #include <llulu/lu_str.h>
 #include <llulu/lu_rng.h>
+#include <llulu/lu_buffer.h>
 
 #include <stdlib.h>
 #include <stdio.h>
 
 void test_group_rng(lu_test_state *s);
-void test_group_sstr(lu_test_state *s);
 void test_group_mat4(lu_test_state *s);
+void test_group_buff(lu_test_state *s);
+void test_group_sstr(lu_test_state *s);
 
 void test_failed_callback(lu_test_state *state, const char *failed_test_name)
 {
@@ -31,6 +33,7 @@ int main(int argc, char **argv)
 
     lu_test_group(&ts, "rng", test_group_rng);
     lu_test_group(&ts, "mat4", test_group_mat4);
+    lu_test_group(&ts, "containers", test_group_buff);
     lu_test_group(&ts, "sstr", test_group_sstr);
 
     lu_test_end(&ts);
@@ -324,6 +327,22 @@ void test_group_mat4(lu_test_state *s)
         lu_test_check(s, "Inverse_7", lu_mat4_inverse(r.m, a.m));
         lu_test_check(s, "Inverse_8", mat4_eq(r.m, e.m));
     }
+}
+
+void test_group_buff(lu_test_state *s)
+{
+    lu_array arr1;
+    LU_ARR_ALLOCA(arr1, int, 32);
+    lu_test_check(s, "Empty", lu_arr_is_empty(&arr1));
+    lu_test_check(s, "NotFull", !lu_arr_is_full(&arr1));
+    lu_test_check(s, "CountIsZero", !lu_arr_count(&arr1));
+
+    *(int*)lu_arr_push(&arr1) = lu_rng_getg();
+
+    lu_test_check(s, "NotEmpty", !lu_arr_is_empty(&arr1));
+    lu_test_check(s, "NotFull", !lu_arr_is_full(&arr1));
+    lu_test_check(s, "CountIsOne", lu_arr_count(&arr1) == 1);
+
 }
 
 void test_group_sstr(lu_test_state *s)

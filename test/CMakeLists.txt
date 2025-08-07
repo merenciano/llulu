@@ -27,6 +27,7 @@ target_sources(test_data_types PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/../src/lu_log.c
     ${CMAKE_CURRENT_SOURCE_DIR}/../src/lu_error.c
     ${CMAKE_CURRENT_SOURCE_DIR}/../src/lu_hooks.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/../src/lu_buffer.c
 )
 
 target_include_directories(test_data_types PRIVATE
