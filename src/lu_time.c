@@ -48,6 +48,8 @@ lu_time_get(void)
 
 #else
 /* Backup, microseconds precision at best. */
+#include <sys/time.h>
+
 lu_timestamp
 lu_time_get(void)
 {

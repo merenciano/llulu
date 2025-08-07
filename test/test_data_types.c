@@ -382,7 +382,7 @@ void test_group_sstr(lu_test_state *s)
     int count[4] = {0, 0, 0, 0};
     for (int i = 0; i < 32; ++i) {
         names[i] = (lu_sstr){"0"};
-        _itoa_s(i, names[i].str, LU_SSTRLEN, 10);
+	sprintf(names[i].str, "%d", i);
         hashes[i] = lu_sstr_hash(&names[i]);
         count[hashes[i] % 4]++;
     }
