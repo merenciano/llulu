@@ -76,6 +76,11 @@
 
 #define LU_ASSERT_ASSIGNABLE_TYPE(TYPE, VALUE) ((TYPE){ 0 } = (VALUE))
 
+/* X to bytes helpers */
+#define LU_KILOBYTES(KB) ((KB) * 1024)
+#define LU_MEGABYTES(MB) (LU_KILOBYTES(MB) * 1024)
+#define LU_GIGABYTES(GB) (LU_MEGABYTES(GB) * 1024)
+
 #define LU_ARR_SIZE(ARR) (sizeof(ARR) / sizeof(ARR[0]))
 #define LU_IS_POW2(X) ((X > 0) && !((X) & ((X) - 1)))
 
