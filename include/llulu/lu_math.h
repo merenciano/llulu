@@ -72,6 +72,14 @@ typedef struct lu_vec4 {
 	float x, y, z, w;
 } lu_vec4;
 
+typedef struct lu_rect {
+    unsigned short x, y, w, h;
+} lu_rect;
+
+typedef struct lu_color {
+    float r, g, b, a;
+} lu_color;
+
 typedef struct lu_mat3 {
     float m[9];
 } lu_mat3;
